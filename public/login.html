@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+  </head>
+  <style>
+    .card {
+      background-color: skyblue;
+      box-shadow: 20px 20px 50px 15px rgb(177, 196, 206);
+    }
+    h3 {
+      color: blue;
+      text-align: center;
+    }
+  </style>
+  <body>
+    <div class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">
+              <h3>Login</h3>
+            </div>
+            <div class="card-body">
+              <form method="post" onsubmit="login(event)">
+                <div class="form-group">
+                  <label for="email">email</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="email"
+                    placeholder="Enter email"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="password">Password</label>
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="password"
+                    placeholder="Password"
+                  />
+                </div>
+                <button class="btn btn-primary">Login</button>
+              </form>
+              <p class="tytext">
+                Dont have an account? <a href="./signup.html">SignUP Here!</a>
+              </p>
+              <p>
+                <a href="./resetpwd.html">Forgot password?</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+
+    <script>
+      async function login(event) {
+        event.preventDefault();
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        let obj = {
+          email,
+          password,
+        };
+        console.log(obj);
+        try {
+          const res = await axios.post("http://localhost:3000/login", obj);
+          localStorage.setItem("token", res.data.token);
+          console.log("login data posted", res.data);
+          if (res.status === 200) {
+            window.alert("You are successfully logged in");
+            window.location.href = "expense.html";
+          }
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    </script>
+  </body>
+</html>

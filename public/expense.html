@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expense</title>
+  </head>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+    crossorigin="anonymous"
+  />
+  <style>
+    body {
+      font-family: Georgia, "Times New Roman", Times, serif;
+      /* background-color: rgb(218, 239, 205); */
+    }
+
+    h1,
+    h5,
+    h3 {
+      color: blue;
+    }
+
+    .container {
+      background-color: skyblue;
+      height: 650px;
+      width: 70%;
+      padding: 10px;
+      margin-top: 3%;
+      font: bold;
+      box-shadow: 30px 30px 5px 5px #b6c7c7;
+    }
+
+    .row2 {
+      width: 98%;
+      height: 350px;
+      background-color: rgb(233, 248, 254);
+      margin-left: 10px;
+  
+    }
+   .logout
+   {
+    position: absolute;
+right: 10px;
+top: 5px;
+   }
+   .BuyPremium
+   {
+    border:2px solid goldenrod;
+    color: goldenrod;
+    background-color: rgb(54, 50, 50);
+    float: right;
+   }
+   .BuyPremium:hover
+   {
+    background-color:rgb(233, 213, 97);
+   }
+   #msg
+   {
+    font-size: 18px;
+   display: inline;
+   float: right;
+    background-color:goldenrod;
+    font-weight: bold;
+    color: black;
+   }
+  </style>
+
+  <body>
+    <div>
+      <div >
+        <a href="./index.html" class="logout"><button class="btn btn-info">LogOut</button></a>
+      </div>
+      <div class="container-sm container">
+        <div id="msg"></div>
+       <div>
+        <button class="btn BuyPremium" id="rzp-Buy">BuyPremium</button>
+         </div>
+       <div>
+        <h1 class="text-center">Expense tracker</h1>
+      </div>
+      <div>
+        <form onsubmit="OnSubmit(event)" class="text-center" id="formId">
+          <div class="row">
+            <div class="col-lg-3 my-3 d-inline-flex">
+              <label class="form-label" for="amt">Expense amount</label>
+              <input
+                class="form-control"
+                type="number"
+                name="amount"
+                id="amt"
+              />
+            </div>
+            <div class="col-lg-4 my-3 d-inline-flex">
+              <label class="form-label" for="desc">Expense Description</label>
+              <input
+                class="form-control"
+                type="text"
+                name="description"
+                id="desc"
+              />
+            </div>
+            <div class="col-lg-3 my-3 d-inline-flex">
+              <label class="form-label" for="select">Choose Category</label>
+              <select
+                class="form-select"
+                name="category"
+                id="category"
+                aria-label="Default select example"
+              >
+                <option selected>Choose Category</option>
+                <option value="Movie">Movie</option>
+                <option value="Fuel">Fuel</option>
+                <option value="Food">Food</option>
+                <option value="Rent">Rent</option>
+                <option value="Personal Expense">Personal Expense</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col justify-content-center mx-4 d-inline-flex">
+              <div id="premiumMsg"></div>
+              <button type="submit" class="btn btn-outline-primary my-3">
+                Add Expense
+              </button>
+            </div>
+            </div>
+        </div>
+        <div class="row  row2">
+            <div class="col-6  border-3 border-secondary border-end">
+                <div class="row">
+                    <div class="col-12 mt-2 d-flex justify-content-end">
+                       <a href="./pagination.html"> Show Report</a>
+                    </div>
+                    <div>
+                        <ul id="show_report">
+                        </ul>
+                    </div>
+                </div>
+        </div>
+        <div class="col-6">
+            <div class="row">
+                <div class="col-12 pe-3  d-flex justify-content-end">
+                <!-- <button type="submit" class="btn btn-info" id="leaderboard">LeaderBorad</button> -->
+                <div id="leaderBoard_btn" class="mt-2"></div>
+                </div>
+                
+            </div>
+            <div class="row">
+              <div class="col-12 justify-content-start"><div id="showlist"></div></div>
+              <!-- <h3>Expenses</h3> -->
+              
+                </div>
+            
+        </div>
+    </div>
+</div>
+ 
+   
+        </form>
+           
+    
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+  <script>
+    let currentlyEditingId = null;
+    async function OnSubmit(event) {
+      event.preventDefault();
+      if (currentlyEditingId !== null) {
+        await updateExpense();
+    } else {
+      const amount = document.getElementById("amt").value;
+      const description = document.getElementById("desc").value;
+      const category = document.getElementById("category").value;
+      const userId = 1;
+      let obj = {
+        amount,
+        description,
+        category,
+        userId
+      };
+     const token=localStorage.getItem('token');
+      const res = await axios.post(`http://localhost:3000/expense`, obj,{headers:{Authorization:token}});
+      console.log(obj);
+      console.log("posted new data",res.data)
+      display(obj);
+    }
+  }
+
+    function parseJwt(token) {
+      try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const decodedPayload = decodeURIComponent( atob(base64)
+        .split('')
+        .map((char) => `%${`00${char.charCodeAt(0).toString(16)}`.slice(-2)}`)
+        .join('')
+    );
+
+    return JSON.parse(decodedPayload);
+  } catch (error) {
+    // Handle parsing errors, e.g., invalid JWT format
+    console.error('Error parsing JWT:', error);
+    return null;
+  }
+      }
+    window.addEventListener("DOMContentLoaded", async () => {
+        const token = localStorage.getItem("token");
+          const decodeToken = parseJwt(token);
+          const ispremiumuser = decodeToken.ispremiumuser;
+          console.log(ispremiumuser)
+          if (ispremiumuser) {
+            document.getElementById("rzp-Buy").remove();
+            const msg=document.getElementById("msg");
+            msg.textContent="You are a premium user";
+            showLeaderboard();
+          } 
+            try {
+        const token=localStorage.getItem('token');
+        const res = await axios.get("http://localhost:3000/expense",{headers:{Authorization:token}});
+        const arr = res.data.expense;
+        arr.forEach((element) => {
+          console.log("single",element);
+          display(element);
+        });
+      } catch (err) {
+        console.log("cant get data", err);
+      }
+    });
+    async function updateExpense() {
+    try {
+        
+        const newamt = document.getElementById('amt').value;
+        const newPrice = document.getElementById('desc').value;
+        const newCategory = document.getElementById('category').value;
+
+        const updatedObject = {
+            amount: newamt,
+            description: newPrice,
+            category: newCategory,
+        };
+
+        console.log("updated object",updatedObject);
+
+        const response = await axios.put(`http://localhost:3000/expense/${currentlyEditingId}`, updatedObject);
+        if (response.status === 200) {
+            // Reset currentlyEditingId after successful update
+            currentlyEditingId = null;
+            // showdetails();
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+    function display(obj) {
+      const parent = document.getElementById("show_report");
+      const child = document.createElement("li");
+      child.className="li";
+      child.textContent = `Amount is:${obj.amount},Desciption:${obj.description},category:${obj.category}`;
+      parent.appendChild(child);
+
+      //   delete button;
+      const del_btn = document.createElement("input");
+      del_btn.type = "button";
+      del_btn.value = "Delete";
+      del_btn.className="btn btn-outline-primary my-3";
+      child.appendChild(del_btn);
+      del_btn.onclick = async () => {
+        const token = localStorage.getItem("token");
+        const del = await axios.delete(
+          `http://localhost:3000/expense/${obj.id}`,{ headers: { Authorization: token } }
+        );
+        console.log("deleted", del);
+        parent.removeChild(child);
+      };
+    }
+    
+    function showLeaderboard() {
+        const inputElement = document.createElement("input");
+        inputElement.type = "button";
+        inputElement.value = "Show Leaderboard";
+        inputElement.classList="btn btn-info";
+        // inputElement.style.marginTop = "8px";
+        inputElement.onclick = async () => {
+          const token = localStorage.getItem("token");
+          const userLeaderBoardArray = await axios.get(
+
+            "http://localhost:3000/premium/showLeaderBoard",
+            { headers: { Authorization: token } }
+          );
+          const expenses=userLeaderBoardArray.data;
+         
+          var leaderboardElem = document.getElementById("showlist");
+          leaderboardElem.innerHTML='';
+          leaderboardElem.innerHTML += `<h3>Leader Board</h3>`;
+          expenses.forEach((userDetails) => {
+           console.log("obj",userDetails);
+            leaderboardElem.innerHTML+=`<li>Name -${userDetails.name} Total Expense, - ${userDetails.totalExpense}</li>`
+          });
+        };
+        document.getElementById("leaderBoard_btn").appendChild(inputElement);
+      }
+
+
+    //buy Premium button
+    const buyPremium=document.getElementById("rzp-Buy");
+    buyPremium.onclick = async function (e) {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          "http://localhost:3000/purchase/premiummembership",
+          { headers: { Authorization: token } }
+        );
+        console.log(response);
+        
+        var options = {
+          key: "rzp_test_TZnwMUaR5CSU86", //razorpay api key id
+          order_id: response.data.order.id, //for one time payment
+          //handler fn will handle the success payment
+          handler: async function (response) {
+           const res= await axios.post(
+              "http://localhost:3000/purchase/updatetransactionstatus",
+              {
+                order_id: options.order_id,
+                payment_id: response.razorpay_payment_id,
+              },
+              { headers: { Authorization: token } }
+            );
+            alert("You are a Premium user now");
+            document.getElementById("rzp-Buy").remove();
+            const msg=document.getElementById("msg");
+            localStorage.setItem("token", res.data.token);
+            msg.textContent="You are a premium user";
+           showLeaderboard(); 
+          },
+          
+        };
+      
+        const rzp1 = new Razorpay(options);
+        rzp1.open();
+        e.preventDefault();
+        rzp1.on("paymentfailed", function (response) {
+          console.log(response);
+          alert("something went wrong");
+        });
+      };
+      
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sign Up</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="/css/signup.css" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"
+    />
+    <style>
+      .card {
+        background-color: skyblue;
+        padding: 8px;
+        margin: 8px;
+        box-shadow: 20px 20px 50px 15px rgb(177, 196, 206);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="container row1">
+        <div class="row row1">
+          <div class="col d-flex justify-content-center align-items-center">
+            <div class="form text-primary fw-bolder card">
+              <div class="border-bottom border-dark my-4">
+                <h1 class="text-center">Forgot Password?</h1>
+              </div>
+              <form
+                action="/password/forgotpassword"
+                method="post"
+                onsubmit="forgotpassword(event)"
+              >
+                <div class="panel panel-default">
+                  <div class="panel-body">
+                    <div class="text-center">
+                      <h3><i class="fa fa-lock fa-3x text-dark"></i></h3>
+                      <p>You can reset your password here.</p>
+                      <div class="panel-body">
+                        <form action="/password/forgotpassword" method="post">
+                          <div class="form-group">
+                            <div class="input-group">
+                              <span class="input-group-addon"
+                                ><i
+                                  class="glyphicon glyphicon-envelope color-blue"
+                                ></i
+                              ></span>
+                              <input
+                                id="email"
+                                name="email"
+                                placeholder="Enter your Email address"
+                                class="form-control"
+                                type="text"
+                              />
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-12 my-3">
+                              <button type="submit">Reset Password</button
+                              ><br />
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="circle"></div>
+    <div class="circle-1"></div>
+    <div class="circle-2"></div>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"
+      integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+
+    <script>
+      function forgotpassword(e) {
+        e.preventDefault();
+        console.log(e.target.name);
+        const email = document.getElementById("email").value;
+
+        const userDetails = {
+          email: email,
+        };
+        console.log(userDetails);
+        axios
+          .post("http://localhost:3000/password/forgotpassword", userDetails)
+          .then((response) => {
+            console.log("your response", response);
+            if (response.status === 200) {
+              document.body.innerHTML +=
+                '<div style="color:blue; font-weight:bold">Mail Successfuly sent <div>';
+            } else {
+              throw new Error("Something went wrong!!!");
+            }
+          })
+          .catch((err) => {
+            document.body.innerHTML += `<div style="color:red;">${err} <div>`;
+          });
+      }
+    </script>
+  </body>
+</html>

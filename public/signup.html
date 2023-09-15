@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SIGNUP</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+  </head>
+  <style>
+    body
+    {
+        /* background-image: url("images/bgimg.jpg"); */
+        opacity: 0.9;
+        z-index: 0.5;
+    }
+    .card {
+      background-color:skyblue;
+      box-shadow: 20px 20px 50px 15px rgb(150, 153, 161);
+    }
+    .tytext
+{
+    width: 80%;
+    padding: 10px;
+    margin: 8px;
+    margin-left: 40px;  
+ 
+}
+h1
+    {
+        text-align: center;
+        color: blue;
+    }
+  </style>
+  <body>
+    <div class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">
+              <h1>Sign Up</h1>
+            </div>
+            <div class="card-body">
+                <form method="POST" onsubmit="onSubmit(event)">
+                    <div class="input">
+                    <input
+                      class="text tytext"
+                      type="text"
+                      name="Username"
+                      id="name"
+                      placeholder="Username"/><br>
+                      <input
+                      class="text w3lpass tytext"
+                      type="text"
+                      id="phone"
+                      name="mobile_no"
+                      placeholder="mobile_no"
+                     
+                    /><br>
+                    <input
+                      class="text email tytext"
+                      type="email"
+                      id="email"
+                      name="email"
+                      placeholder="Email"
+                  
+                    /><br>
+                    <input
+                      class="text tytext"
+                      type="password"
+                      id="password"
+                      name="password"
+                      placeholder="Password"
+                      />
+                  </div>
+                    <div class="wthree-text">
+                                <label class="anim tytext">
+                            <input type="checkbox" class="checkbox"> I Agree To The Terms & Conditions
+                            <!-- <span class="tytext">I Agree To The Terms & Conditions</span> -->
+                        </label>
+                     
+                    </div>
+                    <input class="btn btn-primary tytext submit" type="submit" value="SignUp">
+                </form>
+                <p class="tytext">Already have an account? <a href="./login.html">Login Now!</a></p>
+            </div>
+            </div>
+                  </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <script>
+    async function onSubmit(event)
+      {
+event.preventDefault();
+const name=document.getElementById('name').value;
+const phone=document.getElementById('phone').value;
+const email=document.getElementById('email').value;
+const password=document.getElementById('password').value;
+let obj={
+  name,phone,email,password
+}
+console.log(obj);
+try{
+const res=await axios.post("http://localhost:3000/signup",obj);
+console.log(res.data);
+if(res.status==200)
+{
+  window.alert("your account has been created");
+      window.location.href='/login.html';
+}
+else{
+  console.log("login failed");
+}
+}
+catch(err)
+{
+  console.log(err);
+}
+      }
+    </script>
+  </body>
+</html>
